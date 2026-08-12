@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste SignalR</title>
+</head>
+<body>
+    <h2>Teste de ligação SignalR</h2>
+    <div id="log"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/hubs/seat-reservation")
+            .build();
+
+        connection.on("SeatReserved", (data) => {
+            document.getElementById("log").innerHTML += `<p>Lugar reservado: ${JSON.stringify(data)}</p>`;
+        });
+
+        connection.start()
+            .then(() => {
+                document.getElementById("log").innerHTML += "<p>Ligado ao Hub!</p>";
+                return connection.invoke("JoinEventGroup", "304a41e6-8222-4bca-a37e-7892b56b7b59");
+            })
+            .then(() => {
+                document.getElementById("log").innerHTML += "<p>Entrou no grupo do evento!</p>";
+            })
+            .catch(err => console.error(err));
+    </script>
+</body>
+</html>

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using TicketingPlataform.Data;
 using TicketingPlataform.DTOs;
 using TicketingPlataform.Entities;
+using TicketingPlataform.Hubs;
 
 namespace TicketingPlataform.Controllers
 {
@@ -11,10 +13,12 @@ namespace TicketingPlataform.Controllers
     public class ReservationsController : ControllerBase
     {
         private readonly TicketingDbContext _context;
+        private readonly IHubContext<SeatReservationHub> _hubContext;
 
-        public ReservationsController(TicketingDbContext context)
+        public ReservationsController(TicketingDbContext context, IHubContext<SeatReservationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         [HttpGet]
@@ -70,6 +74,8 @@ namespace TicketingPlataform.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                await _hubContext.Clients.Group(dto.EventId.ToString())
+    .SendAsync("SeatReserved", new { seatId = dto.SeatId, status = "Pending" });
             }
             catch (DbUpdateConcurrencyException)
             {
