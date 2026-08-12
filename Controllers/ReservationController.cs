@@ -78,5 +78,32 @@ namespace TicketingPlataform.Controllers
 
             return CreatedAtAction(nameof(GetReservations), new { id = reservation.Id }, reservation);
         }
+
+        [HttpPatch("{id}/confirm")]
+        public async Task<IActionResult> ConfirmReservation(Guid id)
+        {
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(r => r.Id == id);
+            if (reservation == null)
+            {
+                return NotFound("Reservation not found");
+            }
+
+            if (reservation.Status != ReservationStatus.Pending)
+            {
+                return BadRequest($"Reservation cannot be confirmed because its current status is {reservation.Status}.");
+            }
+
+            if (reservation.ExpiresAt < DateTime.UtcNow)
+            {
+                reservation.Status = ReservationStatus.Expired;
+                await _context.SaveChangesAsync();
+                return BadRequest("Reservation has already expired.");
+            }
+
+            reservation.Status = ReservationStatus.Confirmed;
+            await _context.SaveChangesAsync();
+
+            return Ok(reservation);
+        }
     }
 }
