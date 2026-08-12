@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using TicketingPlataform.Data;
 using TicketingPlataform.Services;
 using Hangfire;
 using TicketingPlataform.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -23,6 +22,9 @@ builder.Services.AddScoped<ReservationExpirationService>();
 
 builder.Services.AddSignalR();
 
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
+
 var app = builder.Build();
 
 app.UseHangfireDashboard("/hangfire");
@@ -32,20 +34,15 @@ RecurringJob.AddOrUpdate<ReservationExpirationService>(
     service => service.ExpireOverdueReservationsAsync(),
     "* * * * *");
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.MapHub<SeatReservationHub>("/hubs/seat-reservation");
 
 app.Run();
