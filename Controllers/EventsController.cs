@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using TicketingPlataform.Data;
 using TicketingPlataform.DTOs;
 using TicketingPlataform.Entities;
@@ -11,10 +12,12 @@ namespace TicketingPlataform.Controllers
     public class EventsController : ControllerBase
     {
         private readonly TicketingDbContext _context;
+        private readonly IConnectionMultiplexer _redis;
 
-        public EventsController(TicketingDbContext context)
+        public EventsController(TicketingDbContext context, IConnectionMultiplexer redis)
         {
             _context = context;
+            _redis = redis;
         }
 
         [HttpGet]
@@ -51,6 +54,38 @@ namespace TicketingPlataform.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetEvents), new { id = newEvent.Id }, newEvent);
+        }
+
+        [HttpGet("{id}/availability")]
+        public async Task<IActionResult> GetAvailability(Guid id)
+        {
+            var cacheKey = $"event:{id}:availability";
+            var cachedValue = await _redis.GetDatabase().StringGetAsync(cacheKey);
+
+            if (cachedValue.HasValue)
+            {
+                return Ok(new { availableSeats = int.Parse(cachedValue!), fromCache = true });
+            }
+
+            var eventEntity = await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
+            if (eventEntity == null)
+            {
+                return NotFound("Event not found");
+            }
+
+            var totalSeats = await _context.Seats
+                .Where(s => s.Section.VenueId == eventEntity.VenueId)
+                .CountAsync();
+
+            var reservedSeats = await _context.Reservations
+                .Where(r => r.EventId == id && (r.Status == ReservationStatus.Pending || r.Status == ReservationStatus.Confirmed))
+                .CountAsync();
+
+            var availableSeats = totalSeats - reservedSeats;
+
+            await _redis.GetDatabase().StringSetAsync(cacheKey, availableSeats.ToString(), TimeSpan.FromSeconds(10));
+
+            return Ok(new { availableSeats, fromCache = false });
         }
     }
 }
