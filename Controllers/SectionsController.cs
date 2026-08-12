@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TicketingPlataform.Data;
 using TicketingPlataform.DTOs;
@@ -28,6 +29,8 @@ namespace TicketingPlataform.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Organizer")]
+
         public async Task<IActionResult> CreateSection(CreateSectionDto dto)
         {
             var venueExists = await _context.Venues.AnyAsync(v => v.Id == dto.VenueId);

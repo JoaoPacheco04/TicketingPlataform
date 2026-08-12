@@ -30,7 +30,8 @@ namespace TicketingPlataform.Controllers
             {
                 UserName = dto.Email,
                 Email = dto.Email,
-                FullName = dto.FullName
+                FullName = dto.FullName,
+                Role = dto.Role == "Organizer" ? "Organizer" : "Customer"
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -70,12 +71,12 @@ namespace TicketingPlataform.Controllers
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-                new Claim("fullName", user.FullName),
-                new Claim("role", user.Role)
-            };
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+        new Claim(JwtRegisteredClaimNames.Email, user.Email!),
+        new Claim("fullName", user.FullName),
+        new Claim(ClaimTypes.Role, user.Role)
+    };
 
             var token = new JwtSecurityToken(
                 issuer: jwtSettings["Issuer"],

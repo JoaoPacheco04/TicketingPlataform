@@ -142,6 +142,7 @@ namespace TicketingPlataform.Controllers
         }
 
         [HttpPost("checkin")]
+        [Authorize(Roles = "Organizer")]
         public async Task<IActionResult> CheckIn([FromQuery] string qrCode)
         {
             var reservation = await _context.Reservations.FirstOrDefaultAsync(r => r.QrCode == qrCode);
