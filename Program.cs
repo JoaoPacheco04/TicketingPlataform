@@ -5,6 +5,8 @@ using TicketingPlataform.Data;
 using TicketingPlataform.Services;
 using Hangfire;
 using TicketingPlataform.Hubs;
+using TicketingPlataform.Entities;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,16 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<IConnectionMultiplexer>(
     ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")!));
 
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+})
+.AddEntityFrameworkStores<TicketingDbContext>()
+.AddDefaultTokenProviders();
+
 var app = builder.Build();
 
 app.UseHangfireDashboard("/hangfire");
@@ -41,6 +53,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<SeatReservationHub>("/hubs/seat-reservation");

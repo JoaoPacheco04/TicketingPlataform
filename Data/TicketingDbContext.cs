@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TicketingPlataform.Entities;
 
 namespace TicketingPlataform.Data
 {
-    public class TicketingDbContext : DbContext
+    public class TicketingDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         public TicketingDbContext(DbContextOptions<TicketingDbContext> options) : base(options)
         {
@@ -17,6 +19,8 @@ namespace TicketingPlataform.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Reservation>()
                 .HasOne(r => r.Seat)
                 .WithMany()
