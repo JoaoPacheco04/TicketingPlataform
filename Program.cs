@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TicketingPlataform.Data;
+using TicketingPlataform.Services;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +14,20 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<TicketingDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHangfire(config => config
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHangfireServer();
+
+builder.Services.AddScoped<ReservationExpirationService>();
+
 var app = builder.Build();
+
+app.UseHangfireDashboard("/hangfire");
+
+RecurringJob.AddOrUpdate<ReservationExpirationService>(
+    "expire-overdue-reservations",
+    service => service.ExpireOverdueReservationsAsync(),
+    "* * * * *");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
