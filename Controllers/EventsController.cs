@@ -87,5 +87,57 @@ namespace TicketingPlataform.Controllers
 
             return Ok(new { availableSeats, fromCache = false });
         }
+        [HttpGet("{id}/dashboard")]
+        public async Task<IActionResult> GetDashboard(Guid id)
+        {
+            var eventEntity = await _context.Events.FirstOrDefaultAsync(e => e.Id == id);
+            if (eventEntity == null)
+            {
+                return NotFound("Event not found");
+            }
+
+            var totalSeats = await _context.Seats
+                .Where(s => s.Section.VenueId == eventEntity.VenueId)
+                .CountAsync();
+
+            var reservations = await _context.Reservations
+                .Where(r => r.EventId == id)
+                .ToListAsync();
+
+            var confirmedCount = reservations.Count(r => r.Status == ReservationStatus.Confirmed);
+            var pendingCount = reservations.Count(r => r.Status == ReservationStatus.Pending);
+            var expiredCount = reservations.Count(r => r.Status == ReservationStatus.Expired);
+            var cancelledCount = reservations.Count(r => r.Status == ReservationStatus.Cancelled);
+            var checkedInCount = reservations.Count(r => r.CheckedIn);
+
+            var occupiedSeats = confirmedCount + pendingCount;
+            var occupancyRate = totalSeats == 0 ? 0 : Math.Round((double)occupiedSeats / totalSeats * 100, 1);
+
+            var revenue = await _context.Reservations
+                .Where(r => r.EventId == id && r.Status == ReservationStatus.Confirmed)
+                .Include(r => r.Seat)
+                    .ThenInclude(s => s.Section)
+                .SumAsync(r => r.Seat.Section.BasePrice);
+
+            return Ok(new
+            {
+                eventId = eventEntity.Id,
+                eventName = eventEntity.Name,
+                totalSeats,
+                occupiedSeats,
+                availableSeats = totalSeats - occupiedSeats,
+                occupancyRate,
+                reservationsByStatus = new
+                {
+                    confirmed = confirmedCount,
+                    pending = pendingCount,
+                    expired = expiredCount,
+                    cancelled = cancelledCount
+                },
+                checkedInCount,
+                revenue
+            });
+        }
+
     }
 }
