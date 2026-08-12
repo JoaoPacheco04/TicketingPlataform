@@ -14,6 +14,9 @@
         public ReservationStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ExpiresAt { get; set; }
+
+        public string? QrCode { get; set; }
+        public bool CheckedIn { get; set; }
     }
 
     public enum ReservationStatus

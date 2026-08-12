@@ -5,6 +5,7 @@ using TicketingPlataform.Data;
 using TicketingPlataform.DTOs;
 using TicketingPlataform.Entities;
 using TicketingPlataform.Hubs;
+using QRCoder;
 
 namespace TicketingPlataform.Controllers
 {
@@ -107,9 +108,52 @@ namespace TicketingPlataform.Controllers
             }
 
             reservation.Status = ReservationStatus.Confirmed;
+            reservation.QrCode = reservation.Id.ToString();
             await _context.SaveChangesAsync();
 
             return Ok(reservation);
+        }
+
+        [HttpGet("{id}/qrcode")]
+        public async Task<IActionResult> GetQrCode(Guid id)
+        {
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(r => r.Id == id);
+            if (reservation == null || reservation.QrCode == null)
+            {
+                return NotFound("Reservation not found or not confirmed yet");
+            }
+
+            using var qrGenerator = new QRCodeGenerator();
+            using var qrCodeData = qrGenerator.CreateQrCode(reservation.QrCode, QRCodeGenerator.ECCLevel.Q);
+            using var qrCode = new PngByteQRCode(qrCodeData);
+            var qrCodeImage = qrCode.GetGraphic(20);
+
+            return File(qrCodeImage, "image/png");
+        }
+
+        [HttpPost("checkin")]
+        public async Task<IActionResult> CheckIn([FromQuery] string qrCode)
+        {
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(r => r.QrCode == qrCode);
+            if (reservation == null)
+            {
+                return NotFound("Invalid QR code");
+            }
+
+            if (reservation.Status != ReservationStatus.Confirmed)
+            {
+                return BadRequest($"Ticket is not valid for check-in. Status: {reservation.Status}");
+            }
+
+            if (reservation.CheckedIn)
+            {
+                return BadRequest("Ticket has already been used for check-in");
+            }
+
+            reservation.CheckedIn = true;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Check-in successful", reservationId = reservation.Id });
         }
     }
 }
