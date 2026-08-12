@@ -1,16 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using QRCoder;
 using TicketingPlataform.Data;
 using TicketingPlataform.DTOs;
 using TicketingPlataform.Entities;
 using TicketingPlataform.Hubs;
-using QRCoder;
 
 namespace TicketingPlataform.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
+
     public class ReservationsController : ControllerBase
     {
         private readonly TicketingDbContext _context;
@@ -34,8 +37,15 @@ namespace TicketingPlataform.Controllers
         }
 
         [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> CreateReservation(CreateReservationDto dto)
         {
+            var userIdClaim = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized("Invalid token");
+            }
+
             var seat = await _context.Seats.FirstOrDefaultAsync(s => s.Id == dto.SeatId);
             if (seat == null)
             {
@@ -63,7 +73,7 @@ namespace TicketingPlataform.Controllers
                 Id = Guid.NewGuid(),
                 SeatId = dto.SeatId,
                 EventId = dto.EventId,
-                UserId = dto.UserId,
+                UserId = userId,
                 Status = ReservationStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(10)
@@ -76,7 +86,7 @@ namespace TicketingPlataform.Controllers
             {
                 await _context.SaveChangesAsync();
                 await _hubContext.Clients.Group(dto.EventId.ToString())
-    .SendAsync("SeatReserved", new { seatId = dto.SeatId, status = "Pending" });
+                    .SendAsync("SeatReserved", new { seatId = dto.SeatId, status = "Pending" });
             }
             catch (DbUpdateConcurrencyException)
             {
