@@ -8,6 +8,7 @@ export interface Event {
   id: string;
   name: string;
   description: string;
+  imageUrl: string | null;
   startDate: string;
   salesOpenDate: string;
   salesCloseDate: string;
@@ -19,6 +20,7 @@ export interface Event {
 export interface CreateEventPayload {
   name: string;
   description: string;
+  imageUrl?: string;
   startDate: string;
   salesOpenDate: string;
   salesCloseDate: string;

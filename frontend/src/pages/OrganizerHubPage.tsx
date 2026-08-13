@@ -25,7 +25,6 @@ function OrganizerHubPage() {
           <h1 className="text-2xl font-bold text-white mb-1">Organizer hub</h1>
           <p className="text-zinc-400 mb-8">Manage your venues, events, and seating.</p>
 
-          {/* Venues */}
           <div className="mb-10">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-white font-semibold">Your venues</h2>
@@ -37,20 +36,20 @@ function OrganizerHubPage() {
               </Link>
             </div>
             {!venues || venues.length === 0 ? (
-              <p className="text-zinc-500 text-sm">No venues yet — create one to get started.</p>
+              <p className="text-zinc-500 text-sm">No venues yet - create one to get started.</p>
             ) : (
               <div className="grid gap-2">
-                {venues.map((v) => (
+                {venues.map((venue) => (
                   <div
-                    key={v.id}
-                    className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex justify-between items-center"
+                    key={venue.id}
+                    className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center"
                   >
                     <div>
-                      <p className="text-white font-medium">{v.name}</p>
-                      <p className="text-zinc-500 text-sm">{v.address}</p>
+                      <p className="text-white font-medium">{venue.name}</p>
+                      <p className="text-zinc-500 text-sm">{venue.address}</p>
                     </div>
                     <Link
-                      to={`/create-section?venueId=${v.id}`}
+                      to={`/create-section?venueId=${venue.id}`}
                       className="flex items-center gap-1 text-sm text-zinc-300 hover:text-white"
                     >
                       <Users size={14} /> Add section
@@ -61,7 +60,6 @@ function OrganizerHubPage() {
             )}
           </div>
 
-          {/* Events */}
           <div>
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-white font-semibold">Your events</h2>
@@ -76,17 +74,17 @@ function OrganizerHubPage() {
               <p className="text-zinc-500 text-sm">No events yet.</p>
             ) : (
               <div className="grid gap-2">
-                {events.map((e) => (
+                {events.map((event) => (
                   <div
-                    key={e.id}
-                    className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex justify-between items-center"
+                    key={event.id}
+                    className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center"
                   >
                     <div>
-                      <p className="text-white font-medium">{e.name}</p>
-                      <p className="text-zinc-500 text-sm">{e.venue?.name}</p>
+                      <p className="text-white font-medium">{event.name}</p>
+                      <p className="text-zinc-500 text-sm">{event.venue?.name}</p>
                     </div>
                     <Link
-                      to={`/events/${e.id}/dashboard`}
+                      to={`/events/${event.id}/dashboard`}
                       className="flex items-center gap-1 text-sm text-zinc-300 hover:text-white"
                     >
                       <LayoutDashboard size={14} /> Dashboard

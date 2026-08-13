@@ -18,6 +18,7 @@ import CreateEventPage from './pages/CreateEventPage.tsx'
 import EventDetailPage from './pages/EventDetailPage.tsx'
 import ProfilePage from './pages/ProfilePage.tsx'
 import NotFoundPage from './pages/NotFoundPage.tsx'
+import RequireAuth from './components/RequireAuth.tsx'
 
 const queryClient = new QueryClient();
 
@@ -27,7 +28,7 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <Toaster richColors position="top-right" duration={2000} />
         <Routes>
-          <Route path="/" element={<App />} />
+          <Route path="/" element={<RequireAuth><App /></RequireAuth>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/checkin" element={<CheckInPage />} />

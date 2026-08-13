@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, Ticket, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuthStore } from '../store/authStore';
 
@@ -35,10 +35,10 @@ function Navbar() {
     <header className="sticky top-0 z-10 backdrop-blur bg-zinc-900/80 border-b border-zinc-800">
       <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold text-white flex items-center gap-2" onClick={() => setMenuOpen(false)}>
-          🎟️ <span>TicketFlow</span>
+          <Ticket size={24} className="text-cyan-400" aria-hidden="true" />
+          <span>TicketFlow</span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden md:flex gap-6 items-center text-sm">
           {links.map((link) => (
             <Link key={link.to} to={link.to} className="text-zinc-300 hover:text-white transition-colors">
@@ -64,13 +64,16 @@ function Navbar() {
           )}
         </nav>
 
-        {/* Mobile menu button */}
-        <button className="md:hidden text-white" onClick={() => setMenuOpen((v) => !v)}>
+        <button
+          className="md:hidden text-white"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+        >
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <nav className="md:hidden border-t border-zinc-800 px-6 py-4 flex flex-col gap-3 text-sm">
           {links.map((link) => (

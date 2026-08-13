@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Ticket } from 'lucide-react';
 import { toast } from 'sonner';
 import { register } from '../api/auth';
 
@@ -35,7 +36,10 @@ function RegisterPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
         <div className="absolute bottom-10 left-10 right-10">
-          <p className="text-3xl font-bold text-white mb-2">🎟️ TicketFlow</p>
+          <p className="text-3xl font-bold text-white mb-2 flex items-center gap-2">
+            <Ticket className="text-cyan-400" size={30} aria-hidden="true" />
+            TicketFlow
+          </p>
           <p className="text-zinc-300">Join thousands of people booking events every day.</p>
         </div>
       </div>

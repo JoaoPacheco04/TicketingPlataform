@@ -46,6 +46,7 @@ namespace TicketingPlataform.Controllers
                 Id = Guid.NewGuid(),
                 Name = dto.Name,
                 Description = dto.Description,
+                ImageUrl = string.IsNullOrWhiteSpace(dto.ImageUrl) ? null : dto.ImageUrl.Trim(),
                 StartDate = dto.StartDate,
                 SalesOpenDate = dto.SalesOpenDate,
                 SalesCloseDate = dto.SalesCloseDate,

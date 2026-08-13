@@ -46,19 +46,34 @@ function CreateSectionPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    const parsedBasePrice = parseFloat(basePrice);
+    const parsedRows = parseInt(rowCount);
+    const parsedSeatsPerRow = parseInt(seatsPerRow);
+
+    if (Number.isNaN(parsedBasePrice) || parsedBasePrice < 0) {
+      toast.error('Base price must be zero or higher.');
+      return;
+    }
+
+    if (Number.isNaN(parsedRows) || Number.isNaN(parsedSeatsPerRow) || parsedRows < 1 || parsedSeatsPerRow < 1) {
+      toast.error('Rows and seats per row must be at least 1.');
+      return;
+    }
+
     createSectionMutation.mutate(
-      { name, basePrice: parseFloat(basePrice), venueId, layoutType },
+      { name: name.trim(), basePrice: parsedBasePrice, venueId, layoutType },
       {
         onSuccess: (newSection) => {
           createSeatsBulkMutation.mutate(
             {
               sectionId: newSection.id,
-              rowCount: parseInt(rowCount),
-              seatsPerRow: parseInt(seatsPerRow),
+              rowCount: parsedRows,
+              seatsPerRow: parsedSeatsPerRow,
             },
             {
               onSuccess: () => {
-                toast.success(`Section created with ${parseInt(rowCount) * parseInt(seatsPerRow)} seats!`);
+                toast.success(`Section created with ${parsedRows * parsedSeatsPerRow} seats!`);
                 navigate('/organizer');
               },
               onError: () => toast.error('Section created, but seats could not be generated.'),
@@ -106,17 +121,18 @@ function CreateSectionPage() {
               className="p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             >
               <option value="">Select a venue...</option>
-              {venues?.map((v) => (
-                <option key={v.id} value={v.id}>{v.name}</option>
+              {venues?.map((venue) => (
+                <option key={venue.id} value={venue.id}>{venue.name}</option>
               ))}
             </select>
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-sm text-zinc-300">Base price (€)</label>
+            <label className="text-sm text-zinc-300">Base price (EUR)</label>
             <input
               type="number"
               step="0.01"
+              min="0"
               value={basePrice}
               onChange={(e) => setBasePrice(e.target.value)}
               placeholder="75.00"
@@ -125,7 +141,7 @@ function CreateSectionPage() {
             />
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row">
             <div className="flex flex-col gap-1 flex-1">
               <label className="text-sm text-zinc-300">Number of rows</label>
               <input
@@ -180,10 +196,10 @@ function CreateSectionPage() {
 
           <button
             type="submit"
-            disabled={createSectionMutation.isPending}
+            disabled={createSectionMutation.isPending || createSeatsBulkMutation.isPending || !name.trim()}
             className="bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white p-2.5 rounded-lg font-medium transition-colors mt-2"
           >
-            {createSectionMutation.isPending ? 'Creating...' : 'Create section'}
+            {createSectionMutation.isPending || createSeatsBulkMutation.isPending ? 'Creating...' : 'Create section'}
           </button>
         </form>
       </div>

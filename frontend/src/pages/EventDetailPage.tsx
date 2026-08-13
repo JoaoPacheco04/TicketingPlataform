@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useSections } from '../hooks/useSections';
 import { useReservations } from '../hooks/useReservations';
 import { useCreateReservation } from '../hooks/useCreateReservation';
@@ -7,7 +8,6 @@ import { useSeatReservationHub } from '../hooks/useSeatReservationHub';
 import SeatMap from '../components/SeatMap';
 import Footer from '../components/Footer';
 import QueueBanner from '../components/QueueBanner';
-import { toast } from 'sonner';
 
 function EventDetailPage() {
   const { eventId } = useParams<{ eventId: string }>();
@@ -71,14 +71,14 @@ function EventDetailPage() {
     <div className="min-h-screen bg-zinc-950 flex flex-col">
       <main className="flex-1 p-6">
         <div className="max-w-3xl mx-auto">
-          <div className="flex justify-between items-start mb-1">
+          <div className="flex flex-col gap-2 mb-1 sm:flex-row sm:justify-between sm:items-start">
             <h1 className="text-2xl font-bold text-white">Select a seat</h1>
             {role === 'Organizer' && (
               <Link
                 to={`/events/${eventId}/dashboard`}
                 className="text-cyan-400 hover:text-cyan-300 text-sm"
               >
-                View dashboard →
+                View dashboard -&gt;
               </Link>
             )}
           </div>
@@ -86,7 +86,7 @@ function EventDetailPage() {
 
           <QueueBanner eventId={eventId} />
 
-          <div className="flex gap-4 mb-6 text-sm text-zinc-400">
+          <div className="flex flex-wrap gap-4 mb-6 text-sm text-zinc-400">
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> Available
             </span>
@@ -98,7 +98,7 @@ function EventDetailPage() {
           <div className="grid gap-6">
             {sections?.map((section) => (
               <div key={section.id} className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-                <div className="flex justify-between items-baseline mb-4">
+                <div className="flex flex-wrap justify-between items-baseline gap-2 mb-4">
                   <h2 className="text-lg font-semibold text-white">{section.name}</h2>
                   <span className="text-cyan-400 font-medium">€{section.basePrice.toFixed(2)}</span>
                 </div>

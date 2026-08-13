@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { TrendingUp, Users, Euro, CheckCircle2 } from 'lucide-react';
+import { TrendingUp, Users, Euro, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useEventDashboard } from '../hooks/useEventDashboard';
 
@@ -60,6 +60,13 @@ function DashboardPage() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold text-white mb-1">{data.eventName}</h1>
         <p className="text-zinc-400 mb-8">Live sales overview</p>
+
+        {data.occupancyRate >= 90 && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 flex items-center gap-2">
+            <AlertTriangle className="text-red-400" size={18} />
+            <p className="text-red-300 text-sm">This event is nearly sold out ({data.occupancyRate}% capacity).</p>
+          </div>
+        )}
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard

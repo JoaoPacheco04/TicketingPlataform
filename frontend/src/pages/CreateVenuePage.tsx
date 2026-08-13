@@ -14,7 +14,7 @@ function CreateVenuePage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     createVenue.mutate(
-      { name, address },
+      { name: name.trim(), address: address.trim() },
       {
         onSuccess: () => {
           toast.success('Venue created!');
@@ -46,7 +46,7 @@ function CreateVenuePage() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Casa da Música"
+              placeholder="Casa da Musica"
               required
               className="p-2.5 rounded-lg bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
@@ -64,7 +64,7 @@ function CreateVenuePage() {
           </div>
           <button
             type="submit"
-            disabled={createVenue.isPending}
+            disabled={createVenue.isPending || !name.trim() || !address.trim()}
             className="bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white p-2.5 rounded-lg font-medium transition-colors mt-2"
           >
             {createVenue.isPending ? 'Creating...' : 'Create venue'}
