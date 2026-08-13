@@ -56,7 +56,7 @@ function EventList() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {filtered.map((event) => {
+          {filtered.map((event, index) => {
             const status = statusLabels[event.status] ?? statusLabels[0];
             return (
               <Link

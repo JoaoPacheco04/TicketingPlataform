@@ -80,9 +80,7 @@ function LoginPage() {
 
           <p className="text-sm text-zinc-400 text-center">
             Don't have an account?{' '}
-            <Link to="/register" className="text-violet-400 hover:text-violet-300">
-              <Link to="/register" className="text-cyan-400 hover:text-cyan-300">Sign up</Link>
-            </Link>
+            <Link to="/register" className="text-cyan-400 hover:text-cyan-300">Sign up</Link>
           </p>
         </form>
       </div>

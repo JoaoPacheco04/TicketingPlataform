@@ -2,6 +2,13 @@
 
 namespace TicketingPlataform.Entities
 {
+    public enum SeatLayoutType
+    {
+        Rows,
+        Curved,
+        Grid
+    }
+
     public class Section
     {
         public Guid Id { get; set; }
@@ -9,6 +16,8 @@ namespace TicketingPlataform.Entities
 
         [Column(TypeName = "decimal(10,2)")]
         public decimal BasePrice { get; set; }
+
+        public SeatLayoutType LayoutType { get; set; } = SeatLayoutType.Rows;
 
         public Guid VenueId { get; set; }
         public Venue Venue { get; set; } = null!;

@@ -51,6 +51,38 @@ namespace TicketingPlataform.Controllers
 
             return CreatedAtAction(nameof(GetSeats), new { id = newSeat.Id }, newSeat);
         }
+
+        [HttpPost("bulk")]
+        [Authorize(Roles = "Organizer")]
+        public async Task<IActionResult> CreateSeatsBulk(BulkCreateSeatsDto dto)
+        {
+            var sectionExists = await _context.Sections.AnyAsync(s => s.Id == dto.SectionId);
+            if (!sectionExists)
+            {
+                return NotFound("Section not found");
+            }
+
+            var seats = new List<Seat>();
+            for (int rowIndex = 0; rowIndex < dto.RowCount; rowIndex++)
+            {
+                var rowLetter = ((char)('A' + rowIndex)).ToString();
+                for (int seatNumber = 1; seatNumber <= dto.SeatsPerRow; seatNumber++)
+                {
+                    seats.Add(new Seat
+                    {
+                        Id = Guid.NewGuid(),
+                        Row = rowLetter,
+                        Number = seatNumber.ToString(),
+                        SectionId = dto.SectionId
+                    });
+                }
+            }
+
+            _context.Seats.AddRange(seats);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { created = seats.Count });
+        }
     }
 }
 

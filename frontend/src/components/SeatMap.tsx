@@ -25,7 +25,7 @@ function SeatButton({
       disabled={isOccupied || isPending}
       onClick={() => onReserve(seat.id)}
       title={`${seat.row}${seat.number}`}
-      className={`w-9 h-9 rounded-md text-[11px] font-medium flex items-center justify-center transition-colors shrink-0 ${
+      className={`w-9 h-9 rounded-md text-[11px] font-medium flex items-center justify-center transition-all active:scale-90 shrink-0 ${
         isOccupied
           ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
           : 'bg-emerald-600/15 text-emerald-400 border border-emerald-600/30 hover:bg-emerald-600 hover:text-white'
@@ -75,7 +75,7 @@ function CurvedLayout({ seats, occupiedSeatIds, isPending, onReserve }: Omit<Sea
       <div className="w-2/3 h-1.5 bg-cyan-500/30 rounded-full mb-2" />
       <p className="text-zinc-600 text-[10px] tracking-widest uppercase mb-2">Stage</p>
       {rows.map(([row, rowSeats], rowIndex) => {
-        const curveOffset = Math.abs(rowIndex - (rows.length - 1) / 2) * 10;
+        const curveOffset = Math.abs(rowIndex - (rows.length - 1) / 2) * 24;
         return (
           <div
             key={row}
@@ -141,15 +141,13 @@ function SeatMap({ seats, layoutType, occupiedSeatIds, isPending, onReserve }: S
 
   const props = { seats, occupiedSeatIds, isPending, onReserve };
 
-  switch (layoutType) {
-    case SeatLayoutType.Curved:
-      return <CurvedLayout {...props} />;
-    case SeatLayoutType.Grid:
-      return <GridLayout {...props} />;
-    case SeatLayoutType.Rows:
-    default:
-      return <RowsLayout {...props} />;
-  }
+  return (
+    <div className="overflow-x-auto pb-2">
+      {layoutType === SeatLayoutType.Curved && <CurvedLayout {...props} />}
+      {layoutType === SeatLayoutType.Grid && <GridLayout {...props} />}
+      {layoutType !== SeatLayoutType.Curved && layoutType !== SeatLayoutType.Grid && <RowsLayout {...props} />}
+    </div>
+  );
 }
 
 export default SeatMap;

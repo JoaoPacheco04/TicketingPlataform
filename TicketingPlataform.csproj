@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +25,11 @@
     </PackageReference>
     <PackageReference Include="QRCoder" Version="1.8.0" />
     <PackageReference Include="StackExchange.Redis" Version="3.1.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="frontend\\**\\*.ts" />
+    <Compile Remove="frontend\\**\\*.tsx" />
   </ItemGroup>
 
 </Project>

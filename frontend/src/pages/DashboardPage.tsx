@@ -15,7 +15,7 @@ function StatCard({
   accent: string;
 }) {
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
+    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 hover:-translate-y-0.5 transition-all">
       <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${accent}`}>
         {icon}
       </div>

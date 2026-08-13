@@ -45,6 +45,7 @@ namespace TicketingPlataform.Controllers
                 Name = dto.Name,
                 BasePrice = dto.BasePrice,
                 VenueId = dto.VenueId
+                , LayoutType = dto.LayoutType
             };
 
             _context.Sections.Add(newSection);
