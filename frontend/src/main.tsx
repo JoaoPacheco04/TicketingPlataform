@@ -11,7 +11,13 @@ import CheckInPage from './pages/CheckInPage.tsx'
 import DashboardPage from './pages/DashboardPage.tsx'
 import MyReservationsPage from './pages/MyReservationsPage.tsx'
 import CheckoutPage from './pages/CheckoutPage.tsx'
+import CreateSectionPage from './pages/CreateSectionPage.tsx'
+import OrganizerHubPage from './pages/OrganizerHubPage.tsx'
+import CreateVenuePage from './pages/CreateVenuePage.tsx'
+import CreateEventPage from './pages/CreateEventPage.tsx'
 import EventDetailPage from './pages/EventDetailPage.tsx'
+import ProfilePage from './pages/ProfilePage.tsx'
+import NotFoundPage from './pages/NotFoundPage.tsx'
 
 const queryClient = new QueryClient();
 
@@ -25,10 +31,16 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/checkin" element={<CheckInPage />} />
+          <Route path="/organizer" element={<OrganizerHubPage />} />
           <Route path="/my-reservations" element={<MyReservationsPage />} />
+          <Route path="/create-section" element={<CreateSectionPage />} />
+          <Route path="/create-venue" element={<CreateVenuePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/create-event" element={<CreateEventPage />} />
           <Route path="/checkout/:reservationId" element={<CheckoutPage />} />
           <Route path="/events/:eventId" element={<EventDetailPage />} />
           <Route path="/events/:eventId/dashboard" element={<DashboardPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

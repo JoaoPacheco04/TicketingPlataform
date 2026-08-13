@@ -4,6 +4,9 @@ import { useReservations } from '../hooks/useReservations';
 import { useCreateReservation } from '../hooks/useCreateReservation';
 import { useAuthStore } from '../store/authStore';
 import { useSeatReservationHub } from '../hooks/useSeatReservationHub';
+import SeatMap from '../components/SeatMap';
+import Footer from '../components/Footer';
+import QueueBanner from '../components/QueueBanner';
 import { toast } from 'sonner';
 
 function EventDetailPage() {
@@ -65,60 +68,53 @@ function EventDetailPage() {
   );
 
   return (
-    <div className="min-h-screen bg-zinc-950 p-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex justify-between items-start mb-1">
-          <h1 className="text-2xl font-bold text-white">Select a seat</h1>
-          {role === 'Organizer' && (
-            <Link
-              to={`/events/${eventId}/dashboard`}
-              className="text-cyan-400 hover:text-cyan-300 text-sm"
-            >
-              View dashboard →
-            </Link>
-          )}
-        </div>
-        <p className="text-zinc-400 mb-6">Pick an available seat to start your reservation.</p>
+    <div className="min-h-screen bg-zinc-950 flex flex-col">
+      <main className="flex-1 p-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex justify-between items-start mb-1">
+            <h1 className="text-2xl font-bold text-white">Select a seat</h1>
+            {role === 'Organizer' && (
+              <Link
+                to={`/events/${eventId}/dashboard`}
+                className="text-cyan-400 hover:text-cyan-300 text-sm"
+              >
+                View dashboard →
+              </Link>
+            )}
+          </div>
+          <p className="text-zinc-400 mb-6">Pick an available seat to start your reservation.</p>
 
-        <div className="flex gap-4 mb-6 text-sm text-zinc-400">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> Available
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-zinc-600 inline-block" /> Taken
-          </span>
-        </div>
+          <QueueBanner eventId={eventId} />
 
-        <div className="grid gap-6">
-          {sections?.map((section) => (
-            <div key={section.id} className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-              <div className="flex justify-between items-baseline mb-4">
-                <h2 className="text-lg font-semibold text-white">{section.name}</h2>
-                <span className="text-cyan-400 font-medium">€{section.basePrice.toFixed(2)}</span>
+          <div className="flex gap-4 mb-6 text-sm text-zinc-400">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> Available
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-zinc-600 inline-block" /> Taken
+            </span>
+          </div>
+
+          <div className="grid gap-6">
+            {sections?.map((section) => (
+              <div key={section.id} className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
+                <div className="flex justify-between items-baseline mb-4">
+                  <h2 className="text-lg font-semibold text-white">{section.name}</h2>
+                  <span className="text-cyan-400 font-medium">€{section.basePrice.toFixed(2)}</span>
+                </div>
+                <SeatMap
+                  seats={section.seats}
+                  layoutType={section.layoutType}
+                  occupiedSeatIds={occupiedSeatIds}
+                  isPending={createReservation.isPending}
+                  onReserve={handleReserve}
+                />
               </div>
-              <div className="flex flex-wrap gap-2">
-                {section.seats.map((seat) => {
-                  const isOccupied = occupiedSeatIds.has(seat.id);
-                  return (
-                    <button
-                      key={seat.id}
-                      disabled={isOccupied || createReservation.isPending}
-                      onClick={() => handleReserve(seat.id)}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        isOccupied
-                          ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
-                          : 'bg-emerald-600/15 text-emerald-400 border border-emerald-600/30 hover:bg-emerald-600 hover:text-white'
-                      }`}
-                    >
-                      {seat.row}{seat.number}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 }

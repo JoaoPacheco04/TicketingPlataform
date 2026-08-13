@@ -13,3 +13,10 @@ export interface LoginPayload{
 export interface LoginResponse{
     token: string;
 }
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  fullName: string;
+  role: string;
+}

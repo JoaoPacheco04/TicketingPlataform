@@ -15,3 +15,17 @@ export interface Event {
   venue: Venue | null;
   status: number;
 }
+
+export interface CreateEventPayload {
+  name: string;
+  description: string;
+  startDate: string;
+  salesOpenDate: string;
+  salesCloseDate: string;
+  venueId: string;
+}
+
+export interface CreateVenuePayload {
+  name: string;
+  address: string;
+}
