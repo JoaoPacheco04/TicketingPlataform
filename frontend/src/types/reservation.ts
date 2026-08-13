@@ -14,3 +14,8 @@ export interface Reservation {
   qrCode: string | null;
   checkedIn: boolean;
 }
+
+export interface CheckInResponse {
+  message: string;
+  reservationId: string;
+}
