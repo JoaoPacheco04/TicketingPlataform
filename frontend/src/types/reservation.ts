@@ -1,3 +1,5 @@
+import type { Seat } from './seat';
+
 export interface CreateReservationPayload {
   seatId: string;
   eventId: string;
@@ -6,6 +8,7 @@ export interface CreateReservationPayload {
 export interface Reservation {
   id: string;
   seatId: string;
+  seat: Seat | null;
   eventId: string;
   userId: string;
   status: number;

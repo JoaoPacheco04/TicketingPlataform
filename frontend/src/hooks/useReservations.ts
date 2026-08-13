@@ -5,6 +5,5 @@ export function useReservations() {
   return useQuery({
     queryKey: ['reservations'],
     queryFn: getReservations,
-    refetchInterval: 15000, // refetch every 15 seconds
   });
 }

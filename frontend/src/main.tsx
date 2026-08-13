@@ -8,6 +8,9 @@ import App from './App.tsx'
 import LoginPage from './pages/LoginPage.tsx'
 import RegisterPage from './pages/RegisterPage.tsx'
 import CheckInPage from './pages/CheckInPage.tsx'
+import DashboardPage from './pages/DashboardPage.tsx'
+import MyReservationsPage from './pages/MyReservationsPage.tsx'
+import CheckoutPage from './pages/CheckoutPage.tsx'
 import EventDetailPage from './pages/EventDetailPage.tsx'
 
 const queryClient = new QueryClient();
@@ -22,7 +25,10 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/checkin" element={<CheckInPage />} />
+          <Route path="/my-reservations" element={<MyReservationsPage />} />
+          <Route path="/checkout/:reservationId" element={<CheckoutPage />} />
           <Route path="/events/:eventId" element={<EventDetailPage />} />
+          <Route path="/events/:eventId/dashboard" element={<DashboardPage />} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

@@ -24,6 +24,9 @@ function Navbar() {
         <nav className="flex gap-6 items-center text-sm">
           {token ? (
             <>
+              <Link to="/my-reservations" className="text-zinc-300 hover:text-white transition-colors">
+                My tickets
+              </Link>
               {role === 'Organizer' && (
                 <Link to="/checkin" className="text-zinc-300 hover:text-white transition-colors">
                   Check-in

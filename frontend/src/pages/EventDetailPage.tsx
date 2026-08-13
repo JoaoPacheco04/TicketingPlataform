@@ -3,11 +3,14 @@ import { useSections } from '../hooks/useSections';
 import { useReservations } from '../hooks/useReservations';
 import { useCreateReservation } from '../hooks/useCreateReservation';
 import { useAuthStore } from '../store/authStore';
+import { useSeatReservationHub } from '../hooks/useSeatReservationHub';
 import { toast } from 'sonner';
 
 function EventDetailPage() {
   const { eventId } = useParams<{ eventId: string }>();
   const token = useAuthStore((state) => state.token);
+  const role = useAuthStore((state) => state.role);
+  useSeatReservationHub(eventId);
   const { data: sections, isLoading, isError } = useSections();
   const { data: reservations } = useReservations();
   const createReservation = useCreateReservation();
@@ -64,7 +67,17 @@ function EventDetailPage() {
   return (
     <div className="min-h-screen bg-zinc-950 p-6">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold text-white mb-1">Select a seat</h1>
+        <div className="flex justify-between items-start mb-1">
+          <h1 className="text-2xl font-bold text-white">Select a seat</h1>
+          {role === 'Organizer' && (
+            <Link
+              to={`/events/${eventId}/dashboard`}
+              className="text-cyan-400 hover:text-cyan-300 text-sm"
+            >
+              View dashboard →
+            </Link>
+          )}
+        </div>
         <p className="text-zinc-400 mb-6">Pick an available seat to start your reservation.</p>
 
         <div className="flex gap-4 mb-6 text-sm text-zinc-400">
